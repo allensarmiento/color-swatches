@@ -67,3 +67,13 @@ export default defineConfig([
   },
 ])
 ```
+
+## Approach
+
+### 1. Brute Force
+
+This would result in 360 API calls which is not ideal
+
+## 2. Exponential Jump + Linear Backtracking
+
+Total API calls: 234
