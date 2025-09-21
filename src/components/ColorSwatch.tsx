@@ -1,34 +1,37 @@
 import {useEffect, useState} from "react";
-import {getDistinctColors, getDistinctColorsBinarySearch} from "../apis/colorApis.ts";
 import type {Color} from "../types/color.ts";
+import {DistinctColors} from "../utils/distinct-colors.ts";
+import styles from './ColorSwatch.module.css';
 
 const ColorSwatch = () => {
 	const [colors, setColors] = useState<Color[]>([])
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		console.log('calling');
-		const s = '40%';
-		const l = '87%';
-		// getDistinctColors(s, l)
-		// 	.then((colors) => {
-		// 		console.log('colors', colors);
-		// 		setColors(colors);
-		// 	})
-		getDistinctColorsBinarySearch(s, l)
+		const s = '100%';
+		const l = '50%';
+
+		const distinctColors = new DistinctColors(s, l);
+		distinctColors.linearSearch()
 			.then((colors) => {
-				console.log('colors', colors);
 				setColors(colors);
 			})
+			.finally(() => {
+				setLoading(false);
+			});
 	}, []);
 
+	if (loading) return <div>Loading...</div>;
+
 	return (
-		<div>
+		<section className={styles.page}>
 			{colors.map((color: Color) => (
-				<div>
-					{color.name.value}
+				<div className={styles.item}>
+					<img src={color.image.bare} alt={color.name.value} />
+					<span>{color.name.value}</span>
 				</div>
 			))}
-		</div>
+		</section>
 	);
 };
 

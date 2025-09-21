@@ -70,11 +70,27 @@ export default defineConfig([
 
 ## Approach
 
-### 1. Brute Force
+### Option 1. Brute Force
 
-This would result in 360 API calls which is not ideal
+**Method:** Fetch all colors for the 360 hue values.
 
-## 2. Exponential Jump + Linear Backtracking
+This results in the worst time complexity and most API calls.
+
+Pros:
+* Since we're not being rate limited, all the API calls can be made in parallel and the time for a full render of all colors is fast
+
+Cons:
+* Excessive API calls
+
+## Option 2. Exponential Jump + Linear Backtracking
+
+**Method:** When we encounter a new color, jump exponentially until we encounter a new color, and backtrack linearly until we hit the same color again so that we know where the start of the next color is.
+
+Pros:
+* Less API calls because we can skip forward
+
+Cons:
+* Can't run this in parallel because we need to know where the previous color ends before continuing onto the next.
 
 S = 100%, L = 50% -> Total API calls: 240
 S = 90%, L = 47% -> Total API calls: 194
@@ -91,3 +107,7 @@ S = 90%, L = 47% -> Total API calls: 118
 S = 100%, L = 50% -> Total API calls: 215
 S = 90%, L = 47% -> Total API calls: 184
 S = 90%, L = 47% -> Total API calls: 118
+
+## Additional Improvements
+
+* Cache the results so when the user wants to search again, then no API calls are needed because the data was already fetched
