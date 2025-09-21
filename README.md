@@ -76,4 +76,18 @@ This would result in 360 API calls which is not ideal
 
 ## 2. Exponential Jump + Linear Backtracking
 
-Total API calls: 234
+S = 100%, L = 50% -> Total API calls: 240
+S = 90%, L = 47% -> Total API calls: 194
+S = 40%, L = 87% -> Total API calls: 179
+
+## 3. Exponential Jump + Binary Search
+
+S = 100%, L = 50% -> Total API calls: 215
+S = 90%, L = 47% -> Total API calls: 184
+S = 90%, L = 47% -> Total API calls: 118
+
+## 4. Exponential Jump + Binary Search / Linear Backtrack
+
+S = 100%, L = 50% -> Total API calls: 215
+S = 90%, L = 47% -> Total API calls: 184
+S = 90%, L = 47% -> Total API calls: 118

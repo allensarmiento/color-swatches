@@ -26,7 +26,7 @@ export const getColor = (h: number, s: string, l: string): Promise<Color> => {
 export const getDistinctColors = async (s: string, l: string) => {
 	const nameToColor: Record<string, Color> = {};
 	const first = await getColor(HUE_FIRST_NUMBER, s, l);
-	const initialOffset = 2;
+	const initialOffset = 1;
 
 	let offset = initialOffset;
 	let left = HUE_FIRST_NUMBER;
@@ -52,9 +52,6 @@ export const getDistinctColors = async (s: string, l: string) => {
 			rightColor = await getColor(right, s, l);
 		}
 
-		console.log(`LeftColor: ${leftColor.name.value} - ${left}`);
-		console.log(`RightColor: ${rightColor.name.value} - ${right}`);
-
 		offset = initialOffset;
 		left = right + 1;
 		left = left < HUE_LAST_NUMBER ? left : HUE_LAST_NUMBER;
@@ -63,10 +60,69 @@ export const getDistinctColors = async (s: string, l: string) => {
 
 		leftColor = await getColor(left, s, l);
 		rightColor = await getColor(right, s, l);
+	}
 
-		console.log(`Start: ${leftColor.name.value} - ${left}`);
-		console.log(`End: ${rightColor.name.value} - ${right}`);
-		console.log('==================================');
+	console.log(`Total calls: ${totalCalls}`);
+	return Object.values(nameToColor);
+};
+
+const binarySearch = async (s: string, l: string, start: number, end: number) => {
+	while (start < end) {
+		if (await isColorEqual(s, l, start, end)) {
+			return start;
+		}
+
+		const mid = Math.floor((start + end) / 2);
+		console.log('values', start, mid, end);
+		if (start === mid) {
+			return start;
+		}
+
+		if (await isColorEqual(s, l, start, mid)) {
+			start = mid;
+		} else {
+			end = mid;
+		}
+	}
+	return start;
+};
+
+const isColorEqual = async (s: string, l: string, color1Index: number, color2Index: number) => {
+	const color1= await getColor(color1Index, s, l);
+	const color2 = await getColor(color2Index, s, l);
+	return color1.name.value === color2.name.value;
+};
+
+export const getDistinctColorsBinarySearch = async (s: string, l: string) => {
+	const nameToColor: Record<string, Color> = {};
+
+	let start = HUE_FIRST_NUMBER;
+	let end = start + 1;
+	let offset = 1;
+
+	while ((!Object.keys(nameToColor).length || !(await isColorEqual(s, l, start, HUE_FIRST_NUMBER))) && start < HUE_LAST_NUMBER) {
+		while (await isColorEqual(s, l, start, end) && end < HUE_LAST_NUMBER) {
+			offset *= 2;
+			end = Math.min(HUE_LAST_NUMBER, start + offset)
+		}
+
+		const newColor = await getColor(start, s, l);
+		nameToColor[newColor.name.value] = { ...newColor };
+
+		console.log('color added', newColor.name.value);
+		// if (end - start <= 4) {
+		// 	while (!(await isColorEqual(s, l, start, end)) && start < end) {
+		// 		end -= 1;
+		// 	}
+		// } else {
+			end = await binarySearch(s, l, start, end);
+		// }
+		console.log('start', start);
+		console.log('=====================')
+		console.log('end', end);
+		offset = 1;
+		start = Math.min(HUE_LAST_NUMBER, end + 1);
+		end = Math.min(HUE_LAST_NUMBER, start + offset);
 	}
 
 	console.log(`Total calls: ${totalCalls}`);
