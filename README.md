@@ -10,6 +10,8 @@ If we didn't care about reducing API calls, the brute force approach gives the f
 
 ## How To Run
 
+**Note:** If would like to test the implementation of the other algorithms, set `DEBUG_MODE = true` in `settings.ts`
+
 ### Run With Docker
 
 ```
@@ -43,8 +45,9 @@ Pros:
 Cons:
 * Excessive API calls, could be subject to rate limiting
  
-S = 100%, L = 50% -> Total API calls: 360, 4.25s
-S = 90%, L = 47% -> Total API calls: 360, 7.65s
+Stats:
+* S = 100%, L = 50% -> Total API calls: 360, 4.25s
+* S = 90%, L = 47% -> Total API calls: 360, 7.65s
 
 ## Option 2. Exponential Jump + Linear Backtracking
 
@@ -57,8 +60,9 @@ Cons:
 * Can't run this in parallel because we need to know where the previous color ends before continuing onto the next.
 * For large groupings, jumping too far leads to many API calls when backtracking
 
-S = 100%, L = 50% -> Total API calls: 240, 23.05s
-S = 90%, L = 47% -> Total API calls: 194, 24.48s
+Stats:
+* S = 100%, L = 50% -> Total API calls: 240, 23.05s
+* S = 90%, L = 47% -> Total API calls: 194, 24.48s
 
 ## Option 3. Exponential Jump + Binary Search
 
@@ -72,18 +76,20 @@ Cons:
 * Can't run this in parallel because we need to know where the previous color ends before continuing onto the next.
 * If groupings are small, then this is less effective
 
-S = 100%, L = 50% -> Total API calls: 215, 21.18s
-S = 90%, L = 47% -> Total API calls: 184, 22.93s
-S = 100%, L = 39% -> Total API calls: 197, 21.24s
-S = 66%, L = 22% -> Total API calls: 139, 17.68s
-S = 0%, L = 0% -> Total API calls: 11, 6.94s
+Stats:
+* S = 100%, L = 50% -> Total API calls: 215, 21.18s
+* S = 90%, L = 47% -> Total API calls: 184, 22.93s
+* S = 100%, L = 39% -> Total API calls: 197, 21.24s
+* S = 66%, L = 22% -> Total API calls: 139, 17.68s
+* S = 0%, L = 0% -> Total API calls: 11, 6.94s
 
 ## Option 4. Exponential Jump + Binary Search / Linear Backtrack
 
 **Method:** This combines linear backtracking when we have a distance <= 4 and binary search when dealing with a larger search space. If all groups happen to be small, then we benefit from linear backtracking. Although in this case the number of API calls appear to be the same as Option 3.
 
-S = 100%, L = 50% -> Total API calls: 215, 20.98s
-S = 90%, L = 47% -> Total API calls: 184, 23.99s
-S = 100%, L = 39% -> Total API calls: 197, 20.34s
-S = 66%, L = 22% -> Total API calls: 139, 17.20s
-S = 0%, L = 0% -> Total API calls: 11, 7.43s
+Stats:
+* S = 100%, L = 50% -> Total API calls: 215, 20.98s
+* S = 90%, L = 47% -> Total API calls: 184, 23.99s
+* S = 100%, L = 39% -> Total API calls: 197, 20.34s
+* S = 66%, L = 22% -> Total API calls: 139, 17.20s
+* S = 0%, L = 0% -> Total API calls: 11, 7.43s

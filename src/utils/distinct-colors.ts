@@ -1,4 +1,5 @@
 import {getColor} from "../apis/colorApis.ts";
+import {DEBUG_MODE} from "../settings.ts";
 import type {Color} from "../types/color.ts";
 
 const FIRST_DEGREE = 0;
@@ -19,7 +20,6 @@ export class DistinctColors {
 	private readonly s: string;
 	private readonly l: string;
 	private readonly nameToColor: Record<string, Color> = {};
-	private debugMode: boolean = true;
 	private totalCalls: number = 0;
 	emitter = new EventTarget();
 
@@ -41,7 +41,7 @@ export class DistinctColors {
 			this.addColor(color);
 		});
 
-		if (this.debugMode) {
+		if (DEBUG_MODE) {
 			console.log('Total API calls:', this.totalCalls);
 		}
 		return Object.values(this.nameToColor);
@@ -96,7 +96,7 @@ export class DistinctColors {
 			await resetVariables();
 		}
 
-		if (this.debugMode) {
+		if (DEBUG_MODE) {
 			console.log('Total API calls:', this.totalCalls);
 		}
 		return Object.values(this.nameToColor);

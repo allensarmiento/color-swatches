@@ -1,4 +1,5 @@
 import {type ChangeEvent, useState} from "react";
+import {DEBUG_MODE} from "../settings.ts";
 import type {Color} from "../types/color.ts";
 import {Algorithm, BacktrackingAlgorithm, DistinctColors} from "../utils/distinct-colors.ts";
 import styles from './ColorSwatch.module.css';
@@ -54,17 +55,19 @@ const ColorSwatch = () => {
 						step="1"
 					/> %
 				</div>
-				<div className={styles.input}>
-					<label htmlFor="algorithm">Algorithm:</label>
-					<select id="algorithm" value={algorithm} onChange={onAlgorithmChange}>
-						<option value={Algorithm.LINEAR}>Linear</option>
-						<option value={BacktrackingAlgorithm.LINEAR}>Exponential Linear Backtracking</option>
-						<option value={BacktrackingAlgorithm.BINARY_SEARCH}>
-							Exponential Binary Search Backtracking
-						</option>
-						<option value={BacktrackingAlgorithm.COMBINED}>Exponential Combined Backtracking</option>
-					</select>
-				</div>
+				{DEBUG_MODE && (
+					<div className={styles.input}>
+						<label htmlFor="algorithm">Algorithm:</label>
+						<select id="algorithm" value={algorithm} onChange={onAlgorithmChange}>
+							<option value={Algorithm.LINEAR}>Linear</option>
+							<option value={BacktrackingAlgorithm.LINEAR}>Exponential Linear Backtracking</option>
+							<option value={BacktrackingAlgorithm.BINARY_SEARCH}>
+								Exponential Binary Search Backtracking
+							</option>
+							<option value={BacktrackingAlgorithm.COMBINED}>Exponential Combined Backtracking</option>
+						</select>
+					</div>
+				)}
 				<button className={styles.submit} onClick={onSubmit}>Submit</button>
 			</div>
 			<section className={styles.section}>
@@ -76,7 +79,7 @@ const ColorSwatch = () => {
 					</div>
 				))}
 				{loading && Array(Math.max(20 - colors.length, 1)).fill(0).map((_, index) => (
-					<div className={styles.skeleton} key={index} />
+					<div className={styles.skeleton} key={index}/>
 				))}
 			</section>
 		</div>
