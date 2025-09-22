@@ -1,0 +1,12 @@
+FROM node:24 AS dev
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN yarn install
+COPY . .
+ENV NODE_ENV=development
+
+# Expose the Vite dev server port (default is 5173)
+EXPOSE 5173 24678
+
+CMD ["yarn", "dev", "--host", "0.0.0.0", "--port", "5173"]
