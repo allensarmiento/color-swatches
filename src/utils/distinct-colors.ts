@@ -30,7 +30,10 @@ export class DistinctColors {
 
 	async linearSearch() {
 		const promises = [...Array(MAX_DEGREES).keys()].map((degree) => (
-			getColor(degree, this.s, this.l)
+			getColor(degree, this.s, this.l).then((data) => {
+				this.totalCalls++;
+				return data;
+			})
 		));
 
 		const colors = await Promise.all(promises);
@@ -38,6 +41,9 @@ export class DistinctColors {
 			this.addColor(color);
 		});
 
+		if (this.debugMode) {
+			console.log('Total API calls:', this.totalCalls);
+		}
 		return Object.values(this.nameToColor);
 	}
 
