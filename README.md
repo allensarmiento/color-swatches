@@ -2,13 +2,13 @@
 
 ## Design Choice Considerations
 
-The approach taken for this is Option 3: Exponential Jump + Binary Search to be able to reduce the number of API calls. Since colors are grouped together, jumping exponentially reduces the number of API calls. When encountering a different color, we know that the last color in the group must exist within the search space. Using a binary search approach lets us reduce the number of API calls especially when the groupings are very large. Option 4 of combining both linear and binary search for finding the end of the group doesn't appear to be offering much gain in runtime.
+The goal of this project seems to be to reduce the number of API calls. Since the colors names are grouped together, we can exponentially jump forward until we hit a different color and use binary search to locate the index of the last item in the group (Option 3 listed below). By using binary search over linear search for backtracking, we get less API calls if the groups are very large. In this project, the group sizes can vary. A hybrid approach of linear and binary search depending on the group size could be considered (Option 4 listed below), but did not see a difference in the number of API calls.
 
 For the frontend implementation, being able to cache data is helpful to reduce API calls. If we've already called the API for the given HSL values, then we shouldn't call it again. To give better feedback to the user, finding a new color will render it immediately. This is done by dispatching the event. If we had waited the entire time, users may not get any feedback for over 20 seconds which is poor user experience.
 
 If we didn't care about reducing API calls, the brute force approach gives the fastest time to render. This is due to being able to call all the endpoints in parallel. If the endpoints fail, we can easily retry and the user might not even notice. However for the other approaches, endpoints failing will cause the final result to take longer because we are dependent on locating the positions of previous color groups.
 
-Interestingly, we can do a divide-and-conquer approach where we split up the array by the number of workers. This does give a better performance at the cost of extra API calls.
+Interestingly, we can do a divide-and-conquer approach where we split up the array by the number of workers. This does give a better performance at the cost of extra API calls. This would be a good approach to go with if we want to reduce load times while still reducing API calls compared to the brute force method.
 
 ## How To Run
 
