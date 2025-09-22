@@ -6,8 +6,8 @@ import styles from './ColorSwatch.module.css';
 const ColorSwatch = () => {
 	const [colors, setColors] = useState<Color[]>([])
 	const [loading, setLoading] = useState<boolean>(false);
-	const [saturation, setSaturation] = useState<string>('0');
-	const [lightness, setLightness] = useState<string>('0');
+	const [saturation, setSaturation] = useState<string>('100');
+	const [lightness, setLightness] = useState<string>('50');
 	const [algorithm, setAlgorithm] = useState<Algorithm | BacktrackingAlgorithm>(BacktrackingAlgorithm.BINARY_SEARCH);
 
 	const onSaturationChange = (e: ChangeEvent<HTMLInputElement>) => setSaturation(e.target.value);
@@ -16,10 +16,13 @@ const ColorSwatch = () => {
 
 	const onSubmit = () => {
 		setLoading(true);
+		setColors([]);
 		const distinctColors = new DistinctColors(`${saturation}%`, `${lightness}%`);
-		distinctColors.exponentialSearchWithBacktracking(BacktrackingAlgorithm.COMBINED)
-			.then((colors) => setColors(colors))
-			.finally(() => setLoading(false));
+		const promise = algorithm === Algorithm.LINEAR
+			? distinctColors.linearSearch()
+			: distinctColors.exponentialSearchWithBacktracking(algorithm as BacktrackingAlgorithm);
+		distinctColors.emitter.addEventListener('updatedColors', (e: any) => setColors(e.detail));
+		promise.finally(() => setLoading(false));
 	};
 
 	return (
@@ -71,8 +74,8 @@ const ColorSwatch = () => {
 						<span>{color.name.value}</span>
 					</div>
 				))}
-				{loading && Array(20).fill(0).map((_, index) => (
-					<div className={styles.skeleton} key={index}></div>
+				{loading && Array(Math.max(20 - colors.length, 1)).fill(0).map((_, index) => (
+					<div className={styles.skeleton} key={index} />
 				))}
 			</section>
 		</div>

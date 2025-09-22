@@ -21,6 +21,7 @@ export class DistinctColors {
 	private readonly nameToColor: Record<string, Color> = {};
 	private debugMode: boolean = true;
 	private totalCalls: number = 0;
+	emitter = new EventTarget();
 
 	constructor(s: string, l: string ) {
 		this.s = s;
@@ -34,7 +35,7 @@ export class DistinctColors {
 
 		const colors = await Promise.all(promises);
 		colors.forEach((color) => {
-			this.nameToColor[color.name.value] = color;
+			this.addColor(color);
 		});
 
 		return Object.values(this.nameToColor);
@@ -45,7 +46,6 @@ export class DistinctColors {
 		base: number = 1,
 		exponent: number = 2
 	) {
-		this.totalCalls = 0;
 		let start = FIRST_DEGREE;
 		let end: number = 0;
 		let step: number = 0;
@@ -62,7 +62,7 @@ export class DistinctColors {
 		while (continueSearchingColors) {
 			const newColor = await getColor(start, this.s, this.l);
 			this.totalCalls = newColor.fromCache ? this.totalCalls : this.totalCalls + 1;
-			this.nameToColor[newColor.name.value] = newColor;
+			this.addColor(newColor);
 
 			let shouldContinue = true;
 			while (shouldContinue) {
@@ -94,6 +94,13 @@ export class DistinctColors {
 			console.log('Total API calls:', this.totalCalls);
 		}
 		return Object.values(this.nameToColor);
+	}
+
+	private addColor(color: Color) {
+		if (!this.nameToColor[color.name.value]) {
+			this.nameToColor[color.name.value] = color;
+			this.emitter.dispatchEvent(new CustomEvent('updatedColors', {detail: Object.values(this.nameToColor)}));
+		}
 	}
 
 	private async isColorEqual(color1Index: number, color2Index: number) {
