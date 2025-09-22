@@ -1,6 +1,7 @@
 {
   "files": [],
   "compilerOptions": {
+    "erasableSyntaxOnly": false,
     "types": ["vitest/globals"]
   },
   "references": [

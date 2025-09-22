@@ -19,5 +19,8 @@ export interface Color {
 	image: {
 		bare: string;
 		name: string;
-	}
+	},
+
+	// Inserted manually
+	fromCache: boolean;
 }
