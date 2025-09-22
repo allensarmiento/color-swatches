@@ -20,6 +20,17 @@ export interface Color {
 		bare: string;
 		name: string;
 	},
+	rgb: {
+		r: number;
+		g: number;
+		b: number;
+		fraction: {
+			r: number;
+			g: number;
+			b: number;
+		};
+		value: string;
+	}
 
 	// Inserted manually
 	fromCache: boolean;

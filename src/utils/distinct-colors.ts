@@ -10,9 +10,9 @@ export enum Algorithm {
 }
 
 export enum BacktrackingAlgorithm {
-	LINEAR = 'linear',
-	BINARY_SEARCH = 'binary_search',
-	COMBINED = 'combined'
+	LINEAR = 'exp-linear',
+	BINARY_SEARCH = 'exp-binary_search',
+	COMBINED = 'exp-combined'
 }
 
 export class DistinctColors {

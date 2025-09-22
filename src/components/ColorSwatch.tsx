@@ -72,6 +72,7 @@ const ColorSwatch = () => {
 					<div className={styles.item} key={color.name.value}>
 						<img src={color.image.bare} alt={color.name.value}/>
 						<span>{color.name.value}</span>
+						<span>{color.rgb.value}</span>
 					</div>
 				))}
 				{loading && Array(Math.max(20 - colors.length, 1)).fill(0).map((_, index) => (
