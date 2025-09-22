@@ -2,15 +2,17 @@
 
 ## Design Choice Considerations
 
-The approach taken for this is Option 3: Exponential Jump + Binary Search. Since colors are grouped together, jumping exponentially reduces the number of API calls. When encountering a different color, we know that the last color in the group must exist within the search space. Using a binary search approach lets us reduce the number of API calls especially when the groupings are very large. Option 4 of combining both linear and binary search for finding the end of the group doesn't appear to be offering much gain in runtime.
+The approach taken for this is Option 3: Exponential Jump + Binary Search to be able to reduce the number of API calls. Since colors are grouped together, jumping exponentially reduces the number of API calls. When encountering a different color, we know that the last color in the group must exist within the search space. Using a binary search approach lets us reduce the number of API calls especially when the groupings are very large. Option 4 of combining both linear and binary search for finding the end of the group doesn't appear to be offering much gain in runtime.
 
 For the frontend implementation, being able to cache data is helpful to reduce API calls. If we've already called the API for the given HSL values, then we shouldn't call it again. To give better feedback to the user, finding a new color will render it immediately. This is done by dispatching the event. If we had waited the entire time, users may not get any feedback for over 20 seconds which is poor user experience.
 
 If we didn't care about reducing API calls, the brute force approach gives the fastest time to render. This is due to being able to call all the endpoints in parallel. If the endpoints fail, we can easily retry and the user might not even notice. However for the other approaches, endpoints failing will cause the final result to take longer because we are dependent on locating the positions of previous color groups.
 
+Interestingly, we can do a divide-and-conquer approach where we split up the array by the number of workers. This does give a better performance at the cost of extra API calls.
+
 ## How To Run
 
-**Note:** If would like to test the implementation of the other algorithms, set `DEBUG_MODE = true` in `settings.ts`
+**Note:** If you would like to test the implementation of the other algorithms, set `DEBUG_MODE = true` in `settings.ts`
 
 ### Run With Docker
 
@@ -93,3 +95,14 @@ Stats:
 * S = 100%, L = 39% -> Total API calls: 197, 20.34s
 * S = 66%, L = 22% -> Total API calls: 139, 17.20s
 * S = 0%, L = 0% -> Total API calls: 11, 7.43s
+
+## Option 5: Spawn Workers with Exponential Jump + Binary Search / Linear Backtrack (Divide-and-Conquer)
+
+**Method:** Split up the search by number of workers and conduct the search as in Option 4. This does result in increased API calls because each worker is managing its own group. However, performance can be better.
+
+Stats:
+* S = 100%, L = 50% -> Total API calls: 235, 9.74s
+* S = 90%, L = 47% -> Total API calls: 210, 11.82s
+* S = 100%, L = 39% -> Total API calls: 211, 11.07s
+* S = 66%, L = 22% -> Total API calls: 173, 10.37s
+* S = 0%, L = 0% -> Total API calls: 33, 7.10s

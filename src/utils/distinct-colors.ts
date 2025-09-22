@@ -7,13 +7,17 @@ const MAX_DEGREES = 360;
 
 export enum Algorithm {
 	LINEAR = 'linear',
-	EXPONENTIAL = 'exponential'
+	EXPONENTIAL = 'exponential',
+	WORKERS = 'workers'
 }
 
 export enum BacktrackingAlgorithm {
 	LINEAR = 'exp-linear',
 	BINARY_SEARCH = 'exp-binary_search',
-	COMBINED = 'exp-combined'
+	COMBINED = 'exp-combined',
+	WORKERS_LINEAR = 'workers-linear',
+	WORKERS_BINARY_SEARCH = 'workers-binary_search',
+	WORKERS_COMBINED = 'workers-combined'
 }
 
 export class DistinctColors {
@@ -44,15 +48,40 @@ export class DistinctColors {
 		if (DEBUG_MODE) {
 			console.log('Total API calls:', this.totalCalls);
 		}
-		return Object.values(this.nameToColor);
+	}
+
+	async exponentialSearchWithWorkers(
+		backtrackingAlgorithm: BacktrackingAlgorithm = BacktrackingAlgorithm.LINEAR,
+		workers: number = 4,
+		base: number = 1,
+		exponent: number = 2
+	) {
+		const promises = [];
+		for (let i = 0; i < workers; i++) {
+			const start = i * (MAX_DEGREES / workers);
+			const end = (i + 1) * (MAX_DEGREES / workers);
+			promises.push(
+				this.exponentialSearchWithBacktracking(
+					backtrackingAlgorithm,
+					base,
+					exponent,
+					Math.max(FIRST_DEGREE, start - 1),
+					Math.min(MAX_DEGREES, end + 1)
+				)
+			);
+		}
+
+		await Promise.all(promises);
 	}
 
 	async exponentialSearchWithBacktracking(
 		backtrackingAlgorithm: BacktrackingAlgorithm = BacktrackingAlgorithm.LINEAR,
 		base: number = 1,
-		exponent: number = 2
+		exponent: number = 2,
+		startingIndex = FIRST_DEGREE,
+		endingIndex = MAX_DEGREES,
 	) {
-		let start = FIRST_DEGREE;
+		let start = startingIndex;
 		let end: number = 0;
 		let step: number = 0;
 		let continueSearchingColors: boolean = true;
@@ -60,8 +89,8 @@ export class DistinctColors {
 		const resetVariables = async () => {
 			end = start + base;
 			step = base;
-			continueSearchingColors = start < MAX_DEGREES &&
-				(!Object.keys(this.nameToColor).length || !(await this.isColorEqual(FIRST_DEGREE, start)));
+			continueSearchingColors = start < endingIndex &&
+				(!Object.keys(this.nameToColor).length || !(await this.isColorEqual(startingIndex, start)));
 		};
 		await resetVariables();
 
@@ -74,32 +103,31 @@ export class DistinctColors {
 			while (shouldContinue) {
 				try {
 					const isColorEqual = await this.isColorEqual(start, end);
-					shouldContinue = isColorEqual && end < MAX_DEGREES;
+					shouldContinue = isColorEqual && end < endingIndex;
 					if (shouldContinue) {
 						step *= exponent;
-						end = Math.min(start + step, MAX_DEGREES);
+						end = Math.min(start + step, endingIndex);
 					}
 				} catch {
 					shouldContinue = false;
 				}
 			}
 
-			if (backtrackingAlgorithm === BacktrackingAlgorithm.LINEAR) {
+			if ([BacktrackingAlgorithm.LINEAR, BacktrackingAlgorithm.WORKERS_LINEAR].includes(backtrackingAlgorithm)) {
 				end = await this.linearBacktrack(start, end);
-			} else if (backtrackingAlgorithm === BacktrackingAlgorithm.BINARY_SEARCH) {
+			} else if ([BacktrackingAlgorithm.BINARY_SEARCH, BacktrackingAlgorithm.WORKERS_BINARY_SEARCH].includes(backtrackingAlgorithm)) {
 				end = await this.binarySearchBacktrack(start, end);
-			} else if (backtrackingAlgorithm === BacktrackingAlgorithm.COMBINED) {
+			} else if ([BacktrackingAlgorithm.COMBINED, BacktrackingAlgorithm.WORKERS_COMBINED].includes(backtrackingAlgorithm)) {
 				end = await this.linearBinarySearchBacktrack(start, end);
 			}
 
-			start = Math.min(end + 1, MAX_DEGREES);
+			start = Math.min(end + 1, endingIndex);
 			await resetVariables();
 		}
 
 		if (DEBUG_MODE) {
 			console.log('Total API calls:', this.totalCalls);
 		}
-		return Object.values(this.nameToColor);
 	}
 
 	private addColor(color: Color) {

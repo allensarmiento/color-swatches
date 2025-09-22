@@ -15,14 +15,27 @@ const ColorSwatch = () => {
 	const onLightnessChange = (e: ChangeEvent<HTMLInputElement>) => setLightness(e.target.value);
 	const onAlgorithmChange = (e: ChangeEvent<HTMLSelectElement>) => setAlgorithm(e.target.value as Algorithm | BacktrackingAlgorithm);
 
+	const sortColors = (color: Color[]) => color.sort((a, b) => a.hsl.h - b.hsl.h);
+
 	const onSubmit = () => {
 		setLoading(true);
 		setColors([]);
 		const distinctColors = new DistinctColors(`${saturation}%`, `${lightness}%`);
+
+		const shouldSpawnWorkers = [BacktrackingAlgorithm.WORKERS_LINEAR, BacktrackingAlgorithm.WORKERS_BINARY_SEARCH, BacktrackingAlgorithm.WORKERS_COMBINED].includes(algorithm as BacktrackingAlgorithm);
 		const promise = algorithm === Algorithm.LINEAR
 			? distinctColors.linearSearch()
-			: distinctColors.exponentialSearchWithBacktracking(algorithm as BacktrackingAlgorithm);
-		distinctColors.emitter.addEventListener('updatedColors', (e: any) => setColors(e.detail));
+			: shouldSpawnWorkers
+				? distinctColors.exponentialSearchWithWorkers(algorithm as BacktrackingAlgorithm)
+				: distinctColors.exponentialSearchWithBacktracking(algorithm as BacktrackingAlgorithm);
+
+		distinctColors.emitter.addEventListener('updatedColors', (e: any) => {
+			if (shouldSpawnWorkers) {
+				setColors(sortColors(e.detail))
+			} else {
+				setColors(e.detail);
+			}
+		});
 		promise.finally(() => setLoading(false));
 	};
 
@@ -85,6 +98,13 @@ const ColorSwatch = () => {
 								Exponential Binary Search Backtracking
 							</option>
 							<option value={BacktrackingAlgorithm.COMBINED}>Exponential Combined Backtracking</option>
+							<option value={BacktrackingAlgorithm.WORKERS_LINEAR}>Exponential Linear Backtracking
+								Workers
+							</option>
+							<option value={BacktrackingAlgorithm.WORKERS_BINARY_SEARCH}>
+								Exponential Binary Search Backtracking Workers
+							</option>
+							<option value={BacktrackingAlgorithm.WORKERS_COMBINED}>Exponential Combined Backtracking Workers</option>
 						</select>
 					</div>
 				)}
