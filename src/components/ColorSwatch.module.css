@@ -1,3 +1,7 @@
+.container {
+	position: relative;
+}
+
 .section {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 140px);
@@ -20,17 +24,33 @@
 }
 
 .inputGroup {
+	position: sticky;
+	top: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 24px;
+	background-color: #fff;
+	padding: 10px 4px;
+}
+@media screen and (max-width: 768px) {
+	.inputGroup {
+		flex-direction: column;
+		gap: 4px;
+		align-items: stretch;
+		padding: 20px;
+	}
 }
 
-.input {
+.field {
 	display: flex;
 	gap: 4px;
 	padding-bottom: 16px;
 	padding-top: 16px;
+}
+
+.input {
+	width: 50px;
 }
 
 .submit {

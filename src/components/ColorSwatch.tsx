@@ -27,13 +27,14 @@ const ColorSwatch = () => {
 	};
 
 	return (
-		<div>
+		<div className={styles.container}>
 			<div className={styles.inputGroup}>
-				<div className={styles.input}>
+				<div className={styles.field}>
 					<label htmlFor="saturation">Saturation:</label>
 					<input
 						type="number"
 						id="saturation"
+						className={styles.input}
 						onChange={onSaturationChange}
 						value={saturation}
 						name="saturation"
@@ -41,12 +42,22 @@ const ColorSwatch = () => {
 						max="100"
 						step="1"
 					/> %
+					<input
+						id="saturation-slider"
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						value={Number(saturation)}
+						onChange={onSaturationChange}
+					/>
 				</div>
-				<div className={styles.input}>
+				<div className={styles.field}>
 					<label htmlFor="lightness">Lightness:</label>
 					<input
 						type="number"
 						id="lightness"
+						className={styles.input}
 						onChange={onLightnessChange}
 						value={lightness}
 						name="lightness"
@@ -54,9 +65,18 @@ const ColorSwatch = () => {
 						max="100"
 						step="1"
 					/> %
+					<input
+						id="lightness-slider"
+						type="range"
+						min="0"
+						max="100"
+						step="1"
+						value={Number(lightness)}
+						onChange={onLightnessChange}
+					/>
 				</div>
 				{DEBUG_MODE && (
-					<div className={styles.input}>
+					<div className={styles.field}>
 						<label htmlFor="algorithm">Algorithm:</label>
 						<select id="algorithm" value={algorithm} onChange={onAlgorithmChange}>
 							<option value={Algorithm.LINEAR}>Linear</option>
