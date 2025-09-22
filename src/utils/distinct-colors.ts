@@ -131,7 +131,7 @@ export class DistinctColors {
 	}
 
 	private addColor(color: Color) {
-		if (!this.nameToColor[color.name.value]) {
+		if (!this.nameToColor[color.name.value] || color.hsl.h < this.nameToColor[color.name.value].hsl.h) {
 			this.nameToColor[color.name.value] = color;
 			this.emitter.dispatchEvent(new CustomEvent('updatedColors', {detail: Object.values(this.nameToColor)}));
 		}
