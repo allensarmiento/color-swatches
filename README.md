@@ -59,7 +59,7 @@ Pros:
 * Less API calls than Option 1 because we can skip forward
 
 Cons:
-* Can't run this in parallel because we need to know where the previous color ends before continuing onto the next.
+* Slowdown because we need to know where the previous color ends before continuing onto the next.
 * For large groupings, jumping too far leads to many API calls when backtracking
 
 Stats:
@@ -75,7 +75,7 @@ Pros:
 * Best when groups are large
 
 Cons:
-* Can't run this in parallel because we need to know where the previous color ends before continuing onto the next.
+* Slowdown because we need to know where the previous color ends before continuing onto the next.
 * If groupings are small, then this is less effective
 
 Stats:
